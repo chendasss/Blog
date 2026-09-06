@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}博客 · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<section class="section reveal">
+  <h1>博客</h1>
+
+  <div class="category-nav">
+    <a href="{% url 'blog:post_list' %}" class="{% if not active_category and not active_tag %}active{% endif %}">全部</a>
+    {% for c in categories %}
+      <a href="{% url 'blog:post_list' %}?category={{ c.slug }}"
+         class="{% if active_category.slug == c.slug %}active{% endif %}">{{ c.name }}</a>
+    {% endfor %}
+  </div>
+
+  {% for post in page_obj %}
+    <div class="post-item">
+      {% if post.cover %}
+        <a class="post-cover" href="{% url 'blog:post_detail' post.slug %}">
+          <img src="{{ post.cover.url }}" alt="{{ post.title }}">
+        </a>
+      {% endif %}
+      <div class="post-body">
+        <a class="post-title" href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+        <div class="post-excerpt">{{ post.excerpt|default:post.content|truncatechars:120 }}</div>
+        <div class="post-meta">
+          <span>{{ post.published_at|date:"Y-m-d" }}</span>
+          {% if post.category %}<span>{{ post.category.name }}</span>{% endif %}
+          {% for t in post.tags.all %}<span class="tag">{{ t.name }}</span>{% endfor %}
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="empty">这个分类下还没有文章。</p>
+  {% endfor %}
+
+  {% include "_pagination.html" with page_obj=page_obj query_string=query_string %}
+</section>
+{% endblock %}

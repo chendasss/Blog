@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<article class="reveal">
+  <div class="article-head">
+    <a class="section-more" href="{% url 'blog:post_list' %}">← 返回博客</a>
+    <h1 class="article-title">{{ post.title }}</h1>
+    <div class="article-meta">
+      <span>{{ post.published_at|date:"Y-m-d" }}</span>
+      {% if post.category %}<span>{{ post.category.name }}</span>{% endif %}
+      <span>阅读 {{ post.views }}</span>
+      {% for t in post.tags.all %}<span class="tag">{{ t.name }}</span>{% endfor %}
+    </div>
+  </div>
+
+  {% if post.cover %}
+    <img src="{{ post.cover.url }}" alt="{{ post.title }}" style="border-radius:8px; margin-bottom:24px;">
+  {% endif %}
+
+  <div class="prose">
+    {{ post.content_html|safe }}
+  </div>
+
+  <div class="post-nav">
+    {% if prev_post %}
+      <a href="{% url 'blog:post_detail' prev_post.slug %}"><span class="label">上一篇</span>{{ prev_post.title }}</a>
+    {% endif %}
+    {% if next_post %}
+      <a class="next" href="{% url 'blog:post_detail' next_post.slug %}"><span class="label">下一篇</span>{{ next_post.title }}</a>
+    {% endif %}
+  </div>
+</article>
+
+<section class="comments reveal">
+  <h2>评论（{{ comments|length }}）</h2>
+  {% for comment in comments %}
+    <div class="comment">
+      <div class="comment-avatar">{{ comment.name|slice:":1" }}</div>
+      <div class="comment-body">
+        <div class="comment-meta">
+          <span class="name">{{ comment.name }}</span>
+          <span>{{ comment.created_at|date:"Y-m-d H:i" }}</span>
+        </div>
+        <div>{{ comment.content|linebreaksbr }}</div>
+        <button class="comment-reply" data-id="{{ comment.pk }}">回复</button>
+        {% for reply in comment.approved_replies %}
+          <div class="replies">
+            <div class="comment">
+              <div class="comment-avatar">{{ reply.name|slice:":1" }}</div>
+              <div class="comment-body">
+                <div class="comment-meta">
+                  <span class="name">{{ reply.name }}</span>
+                  <span>{{ reply.created_at|date:"Y-m-d H:i" }}</span>
+                </div>
+                <div>{{ reply.content|linebreaksbr }}</div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% empty %}
+    <p class="empty">还没有评论，来抢沙发。</p>
+  {% endfor %}
+</section>
+
+<section class="comment-form reveal">
+  <h2>发表评论</h2>
+  <form method="post" action="{% url 'blog:post_detail' post.slug %}">
+    {% csrf_token %}
+    {{ form.honeypot }}
+    {{ form.parent_id }}
+    <div class="row">
+      {{ form.name }}
+      {{ form.email }}
+    </div>
+    {{ form.content }}
+    <button class="btn" type="submit">提交评论</button>
+  </form>
+</section>
+{% endblock %}

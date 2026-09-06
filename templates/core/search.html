@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}搜索 · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<section class="search-hero reveal">
+  <form class="search-form" action="{% url 'search' %}" method="get">
+    <input type="search" name="q" placeholder="输入关键词…" value="{{ q }}">
+  </form>
+</section>
+
+{% if q %}
+  <p class="result-count">找到 {{ results|length }} 条相关结果</p>
+  {% for item in results %}
+    <div class="post-item reveal">
+      <div class="post-body">
+        <a class="post-title" href="{% url 'blog:post_detail' item.post.slug %}">{{ item.title_html }}</a>
+        <div class="post-excerpt">{{ item.snippet_html }}</div>
+        <div class="post-meta">
+          <span>{{ item.post.published_at|date:"Y-m-d" }}</span>
+          {% if item.post.category %}<span>{{ item.post.category.name }}</span>{% endif %}
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="empty">
+      未找到相关内容。<br>试试换个关键词，或看看<a href="{% url 'blog:post_list' %}">全部文章</a>。
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="empty">输入关键词开始搜索。</p>
+{% endif %}
+{% endblock %}

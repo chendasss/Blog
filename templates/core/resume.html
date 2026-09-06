@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}在线简历 · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="resume-page">
+  <div class="resume-tools screen-only">
+    <button class="btn" onclick="window.print()">打印 / 另存为 PDF</button>
+    {% if site.resume_file %}<a class="btn btn-ghost" href="{{ site.resume_file.url }}" download>下载 PDF</a>{% endif %}
+  </div>
+
+  <div class="resume-head">
+    <h1 class="resume-name">{{ profile.name }}</h1>
+    <div class="resume-contacts">
+      {% if profile.title %}<span>{{ profile.title }}</span>{% endif %}
+      {% if profile.email %}<span>{{ profile.email }}</span>{% endif %}
+      {% if profile.phone %}<span>{{ profile.phone }}</span>{% endif %}
+      {% if profile.location %}<span>{{ profile.location }}</span>{% endif %}
+      {% if profile.github %}<span>{{ profile.github }}</span>{% endif %}
+    </div>
+  </div>
+
+  {% if profile.bio %}
+  <div class="resume-section">
+    <h2>求职目标</h2>
+    <p>{{ profile.bio|linebreaksbr }}</p>
+  </div>
+  {% endif %}
+
+  <div class="resume-section">
+    <h2>技能</h2>
+    {% for category, skills in skill_groups.items %}
+      <p><strong>{{ category }}</strong>：
+        {% for skill in skills %}{{ skill.name }}{% if not forloop.last %}、{% endif %}{% endfor %}
+      </p>
+    {% endfor %}
+  </div>
+
+  <div class="resume-section">
+    <h2>经历</h2>
+    {% for item in timeline %}
+      <p>
+        <strong>{{ item.org }}</strong>{% if item.role %} · {{ item.role }}{% endif %}
+        <span class="timeline-date">
+          （{{ item.start_date|date:"Y-m"|default:"—" }} ~ {{ item.end_date|date:"Y-m"|default:"至今" }}）
+        </span>
+        {% if item.description %}<br><span class="card-meta">{{ item.description|linebreaksbr }}</span>{% endif %}
+      </p>
+    {% endfor %}
+  </div>
+
+  <div class="resume-section">
+    <h2>项目亮点</h2>
+    {% for project in projects %}
+      <p>
+        <strong>{{ project.title }}</strong> —— {{ project.summary }}
+        {% if project.github %}<a href="{{ project.github }}" target="_blank" rel="noopener">GitHub</a>{% endif %}
+      </p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

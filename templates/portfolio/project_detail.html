@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<section class="section reveal">
+  <a class="section-more" href="{% url 'portfolio:project_list' %}">← 返回作品集</a>
+  <h1>{{ project.title }}</h1>
+
+  <div class="card-tags">
+    {% for t in project.tech_list %}<span class="tag">{{ t }}</span>{% endfor %}
+  </div>
+
+  <p style="margin:16px 0; display:flex; gap:12px;">
+    {% if project.github %}<a class="btn btn-ghost" href="{{ project.github }}" target="_blank" rel="noopener">GitHub ↗</a>{% endif %}
+    {% if project.url %}<a class="btn btn-ghost" href="{{ project.url }}" target="_blank" rel="noopener">项目地址 ↗</a>{% endif %}
+  </p>
+
+  {% if project.cover %}
+    <img src="{{ project.cover.url }}" alt="{{ project.title }}" style="border-radius:8px; margin-bottom:24px; max-width:100%;">
+  {% endif %}
+
+  {% if project.description %}
+    <div class="prose">{{ project.description_html|safe }}</div>
+  {% else %}
+    <p>{{ project.summary }}</p>
+  {% endif %}
+</section>
+{% endblock %}

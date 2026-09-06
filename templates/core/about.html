@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}关于我 · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<section class="section reveal">
+  <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+    {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="{{ profile.name }}" style="width:96px; height:96px; border-radius:50%; object-fit:cover; border:1px solid var(--border);">{% endif %}
+    <div>
+      <h1>{{ profile.name }}</h1>
+      <p class="hero-title">{{ profile.title }}</p>
+    </div>
+  </div>
+  <p class="prose" style="margin-top:16px;">{{ profile.bio|linebreaksbr }}</p>
+</section>
+
+<section class="section reveal">
+  <h2 class="section-title">经历时间线</h2>
+  <div class="timeline">
+    {% for item in timeline %}
+      <div class="timeline-item">
+        <span class="timeline-dot"></span>
+        <div class="timeline-org">{{ item.org }}</div>
+        {% if item.role %}<div class="timeline-role">{{ item.role }}</div>{% endif %}
+        <div class="timeline-date">
+          {{ item.start_date|date:"Y-m"|default:"—" }} ~ {{ item.end_date|date:"Y-m"|default:"至今" }}
+        </div>
+        {% if item.description %}<div class="timeline-desc">{{ item.description|linebreaksbr }}</div>{% endif %}
+      </div>
+    {% empty %}
+      <p class="empty">还没有经历记录。</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section reveal">
+  <h2 class="section-title">技能栈</h2>
+  {% for category, skills in skill_groups.items %}
+    <div class="skill-group">
+      <div class="skill-group-title">{{ category }}</div>
+      <div class="skill-list">
+        {% for skill in skills %}
+          <div class="skill-item">
+            <div class="skill-name">{{ skill.name }}</div>
+            {% if skill.description %}<div class="skill-desc">{{ skill.description }}</div>{% endif %}
+            <div class="skill-level">
+              {% for i in "12345" %}
+                <span class="level-dot{% if forloop.counter <= skill.level %} on{% endif %}"></span>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% empty %}
+    <p class="empty">还没有技能记录。</p>
+  {% endfor %}
+</section>
+
+<section class="section reveal">
+  <h2 class="section-title">联系我</h2>
+  <p style="display:flex; gap:20px; flex-wrap:wrap;">
+    {% if profile.email %}<a href="mailto:{{ profile.email }}">{{ profile.email }}</a>{% endif %}
+    {% if profile.github %}<a href="{{ profile.github }}" target="_blank" rel="noopener">GitHub</a>{% endif %}
+    {% if profile.blog_url %}<a href="{{ profile.blog_url }}" target="_blank" rel="noopener">博客</a>{% endif %}
+    {% if profile.location %}<span class="card-meta">{{ profile.location }}</span>{% endif %}
+  </p>
+</section>
+{% endblock %}

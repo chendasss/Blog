@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site.site_name }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1 class="hero-name reveal">{{ profile.name }}</h1>
+  <p class="hero-title reveal">{{ profile.title }}</p>
+  <p class="hero-sub reveal">记录求职感悟 · 技能展示 · 生活片段</p>
+  <div class="hero-actions reveal">
+    <a class="btn" href="{% url 'portfolio:project_list' %}">查看作品集</a>
+    <a class="btn btn-ghost" href="{% url 'about' %}">关于我</a>
+  </div>
+</section>
+
+{% if site.job_seeking %}
+<section class="section reveal">
+  <div class="job-bar">
+    <span><strong>{{ site.job_status_text|default:"求职中" }}</strong>
+      {% if site.job_target %} · {{ site.job_target }}{% endif %}</span>
+    <a class="btn" href="{% url 'resume' %}">查看简历</a>
+  </div>
+</section>
+{% endif %}
+
+<section class="section reveal">
+  <div class="section-head">
+    <h2 class="section-title">技能亮点</h2>
+    <a class="section-more" href="{% url 'about' %}">更多 →</a>
+  </div>
+  <div class="grid grid-4">
+    {% for skill in skills %}
+      <div class="card">
+        <div class="card-title">{{ skill.name }}</div>
+        <div class="card-desc">{{ skill.description }}</div>
+      </div>
+    {% empty %}
+      <p class="empty">还没有添加技能，去后台完善吧。</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="section-head">
+    <h2 class="section-title">精选项目</h2>
+    <a class="section-more" href="{% url 'portfolio:project_list' %}">查看全部 →</a>
+  </div>
+  <div class="grid grid-3">
+    {% for project in projects %}
+      <a class="card" href="{% url 'portfolio:project_detail' project.slug %}">
+        {% if project.cover %}<div class="card-cover"><img src="{{ project.cover.url }}" alt="{{ project.title }}"></div>{% endif %}
+        <div class="card-title">{{ project.title }}</div>
+        <div class="card-desc">{{ project.summary }}</div>
+        <div class="card-tags">
+          {% for t in project.tech_list %}<span class="tag">{{ t }}</span>{% endfor %}
+        </div>
+      </a>
+    {% empty %}
+      <p class="empty">还没有项目，去后台添加吧。</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="section-head">
+    <h2 class="section-title">最新文章</h2>
+    <a class="section-more" href="{% url 'blog:post_list' %}">更多文章 →</a>
+  </div>
+  <div class="grid grid-2">
+    {% for post in posts %}
+      <a class="card" href="{% url 'blog:post_detail' post.slug %}">
+        <div class="card-title">{{ post.title }}</div>
+        <div class="card-desc">{{ post.excerpt|default:post.content|truncatechars:80 }}</div>
+        <div class="card-meta">{{ post.published_at|date:"Y-m-d" }}{% if post.category %} · {{ post.category.name }}{% endif %}</div>
+      </a>
+    {% empty %}
+      <p class="empty">还没有文章，去后台写第一篇吧。</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

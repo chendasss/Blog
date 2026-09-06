@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}求职 · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<section class="section reveal">
+  <div class="job-bar">
+    <span>
+      <strong>
+        <span class="dot{% if site.job_available %} dot-green{% endif %}" style="display:inline-block; vertical-align:middle;"></span>
+        {{ site.job_status_text|default:"求职中" }}
+      </strong>
+      {% if site.job_target %} · {{ site.job_target }}{% endif %}
+    </span>
+    <span style="display:flex; gap:12px;">
+      <a class="btn" href="{% url 'resume' %}">查看在线简历</a>
+      {% if site.resume_file %}<a class="btn btn-ghost" href="{{ site.resume_file.url }}" download>下载简历 PDF</a>{% endif %}
+    </span>
+  </div>
+</section>
+
+<section class="section reveal">
+  <h2 class="section-title">求职感悟</h2>
+  {% for post in posts %}
+    <div class="post-item">
+      <div class="post-body">
+        <a class="post-title" href="{% url 'blog:post_detail' post.slug %}">{{ post.title }}</a>
+        <div class="post-excerpt">{{ post.excerpt|default:post.content|truncatechars:100 }}</div>
+        <div class="post-meta"><span>{{ post.published_at|date:"Y-m-d" }}</span></div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="empty">求职感悟后续会陆续更新。</p>
+  {% endfor %}
+  <div style="margin-top:16px;"><a class="section-more" href="{% url 'blog:post_list' %}?category={{ site.career_category_slug }}">更多求职感悟 →</a></div>
+</section>
+
+<section class="section reveal">
+  <h2 class="section-title">联系我</h2>
+  <p>欢迎直接联系：</p>
+  <p style="display:flex; gap:20px; flex-wrap:wrap;">
+    {% if profile.email %}<a href="mailto:{{ profile.email }}">{{ profile.email }}</a>{% endif %}
+    {% if profile.github %}<a href="{{ profile.github }}" target="_blank" rel="noopener">GitHub</a>{% endif %}
+  </p>
+</section>
+{% endblock %}

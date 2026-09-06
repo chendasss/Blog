@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}生活相册 · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<section class="section reveal">
+  <h1>生活相册</h1>
+  <p class="card-meta">记录一些生活片段。</p>
+
+  {% if active_album %}
+    <div class="category-nav">
+      <a href="{% url 'gallery:gallery' %}">← 全部相册</a>
+      <a class="active">{{ active_album.name }}</a>
+    </div>
+    <div class="gallery-grid">
+      {% for photo in photos %}
+        <div class="gallery-item" data-title="{{ photo.title }}">
+          <img src="{{ photo.image.url }}" alt="{{ photo.title|default:'' }}" data-full="{{ photo.image.url }}" loading="lazy">
+          {% if photo.title %}<div class="gallery-cap">{{ photo.title }}</div>{% endif %}
+        </div>
+      {% empty %}
+        <p class="empty">这个相册还没有照片。</p>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="album-grid">
+      {% for album in albums %}
+        <a class="album-card" href="{% url 'gallery:gallery' %}?album={{ album.slug }}">
+          {% if album.cover %}<img src="{{ album.cover.url }}" alt="{{ album.name }}">{% endif %}
+          <div class="album-info">
+            <span class="album-name">{{ album.name }}</span>
+            <span class="card-meta">（{{ album.photos.count }} 张）</span>
+          </div>
+        </a>
+      {% empty %}
+        <p class="empty">还没有相册，去后台创建吧。</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+
+<div class="lightbox">
+  <button class="lightbox-close" aria-label="关闭">×</button>
+  <button class="lightbox-prev" aria-label="上一张">‹</button>
+  <img class="lightbox-img" src="" alt="">
+  <button class="lightbox-next" aria-label="下一张">›</button>
+  <div class="lightbox-caption"></div>
+</div>
+{% endblock %}
